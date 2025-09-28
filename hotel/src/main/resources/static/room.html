@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="header">
+        <h2>房间管理</h2>
+        <div>
+            <button class="btn-add" onclick="openAdd()">新增房间</button>
+            <button onclick="location.href='dashboard.html'">返回首页</button>
+        </div>
+    </div>
+    <table id="roomTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>房间号</th>
+                <th>类型</th>
+                <th>价格</th>
+                <th>状态</th>
+                <th>操作</th>
+        </thead>
+        <tbody></tbody>
+        <!-- 房间数据将动态插入这里 -->
+    </table>
+    <div id="msg" class="error"></div>
+    <div id="mask" class="mask" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h3 id="modalTitle">新增房间</h3>
+            <input type="hidden" id="roomId">
+            <input type="text" id="roomNumber" placeholder="房间号">
+            <select id="roomType">
+                <option value="" disabled selected>请选择客房分类</option>
+                <option value="标准大床房">标准大床房</option>
+                <option value="标准双床房">标准双床房</option>
+                <option value="多床房">多床房</option>
+                <option value="影音房">影音房</option>
+                <option value="情侣房">情侣房</option>
+                <option value="家庭房">家庭房</option>
+                <option value="整栋别墅">整栋别墅</option>
+            </select>
+            <input type="number" id="roomPrice" placeholder="价格">
+            <select id="roomStatus">
+                <option value="AVAILABLE">可用</option>
+                <option value="BOOKED">已占用</option>
+                <option value="maintenance">维修中</option>
+            </select>
+            <div style="text-align: right;margin-top: 10px;">
+                <button onclick="saveRoom()">保存</button>
+                <button onclick="closeModal()">取消</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const baseUrl = 'http://localhost:8080';
+        const token = localStorage.getItem('token');
+        // if (!token) {
+        //     alert('请先登录');
+        //     window.location.href = 'login.html';
+        // }
+        const msgBox = document.getElementById('msg');
+
+        function showMsg(txt, isError = true) {
+            msgBox.textContent = txt;
+            if (isError) {
+                msgBox.className = 'error';
+            } else {
+                msgBox.className = 'success';
+            }
+        }
+        async function request(url, options = {}) {
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const result = await response.json();
+            if (result.code != 200) {
+                showMsg(result.msg || '请求失败');
+                throw new Error(result.msg || '请求失败');
+            }
+            return result.data;
+        }
+
+        async function loadRooms() {
+            try {
+                const token = localStorage.getItem('token');
+                console.log(token);
+                const response = await fetch(`${baseUrl}/api/room`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+                console.log(result);
+                if (result.code !== 200) {
+                    throw new Error(result.msg || '加载房间失败');
+                }
+                const list = result.data;
+                console.log(list);
+                const tbody = document.querySelector('#roomTable tbody');//css选择器
+                console.log(tbody);
+                tbody.innerHTML = '';/*情况body内容*/
+                list.forEach(room => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${room.id}</td>
+                        <td>${room.roomNumber}</td>
+                        <td>${room.type}</td>
+                        <td>${room.price}</td>
+                        <td>${room.status}</td>
+                        <td>
+                            <button onclick="openEdit(${room.id})">编辑</button>
+                            <button onclick="deleteRoom(${room.id})">删除</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);//给父级添加子节点
+                });
+            } catch (e) {
+                msgBox.textContent = '加载房间失败' + e.message;
+            }
+
+        }
+        function openEdit(id) {
+            fetch(`${baseUrl}/api/room/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(res => res.json()).then(result => {
+                if (result.code !== 200) {
+                    throw new Error(result.msg || '获取房间信息失败');
+                }
+                const room = result.data;
+                document.getElementById('modalTitle').textContent = '编辑房间';
+                document.getElementById('roomId').value = room.id;
+                document.getElementById('roomNumber').value = room.roomNumber;
+                document.getElementById('roomType').value = room.type;
+                document.getElementById('roomPrice').value = room.price;
+                document.getElementById('roomStatus').value = room.status;
+                document.getElementById('mask').style.display = 'flex';
+            }).catch(e => {
+                msgBox.textContent = '获取房间信息失败：' + e.message;
+            });
+        }
+        function openAdd() {
+            document.getElementById('modalTitle').textContent = '新增房间';
+            document.getElementById('roomId').value = '';
+            document.getElementById('roomNumber').value = '';
+            document.getElementById('roomType').value = '';
+            document.getElementById('roomPrice').value = '';
+            document.getElementById('roomStatus').value = 'AVAILABLE';
+            document.getElementById('mask').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('mask').style.display = 'none';
+        }
+        /* 打开编辑弹窗 */
+        async function saveRoom() {
+            const id = document.getElementById('roomId').value;
+            const data = {
+                roomNumber: document.getElementById('roomNumber').value.trim(),
+                type: document.getElementById('roomType').value.trim(),
+                price: parseFloat(document.getElementById('roomPrice').value),
+                status: document.getElementById('roomStatus').value
+            };
+            try {
+                if (id) {
+                    data.id = parseInt(id);
+                    await request(`${baseUrl}/api/room/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    await request(`${baseUrl}/api/room`, {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                }
+                closeModal();
+                msgBox.textContent = '保存成功！';
+                msgBox.className = 'success';
+                console.log("保存成功，正在刷新房间列表...");
+                loadRooms();
+            } catch (e) {
+                msgBox.textContent = '保存房间失败：' + e.message;
+                msgBox.className = 'error';
+            }
+        }
+        /*删除房间*/
+        async function deleteRoom(id) {
+            if (!confirm('确认删除该房间吗？')) {
+                return;
+            }
+            try {
+                await request(`${baseUrl}/api/room/${id}`, {
+                    method: 'DELETE'
+                });
+                loadRooms();
+            } catch (e) {
+                msgBox.textContent = '删除房间失败' + e.message;
+            }
+        }
+        loadRooms();//初始加载房间列表
+    </script>
+</body>
+
+</html>
