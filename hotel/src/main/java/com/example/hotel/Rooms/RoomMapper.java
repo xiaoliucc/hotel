@@ -29,8 +29,8 @@ public interface RoomMapper {
     void insert(Room room);
 
 
-    /*更新房间信息*/
-    @Update("update rooms set room_number=#{roomNumber},type=#{type},"+"" +
+    /*更新房间的信息*/
+    @Update("update rooms set room_number=#{roomNumber},type=#{type},"+
             "price=#{price},status=#{status} where id=#{id}")
     void update(Room room);
 

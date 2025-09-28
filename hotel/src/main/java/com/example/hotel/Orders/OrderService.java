@@ -27,6 +27,11 @@ public class OrderService {
             throw new RuntimeException("退房日期必须晚于入住日期");
         }
 
+        /*冲突检查*/
+        System.out.println("检查冲突：roomId="+order.getRoomId()+
+                ",checkIn="+order.getCheckIn()+
+                ",checkOut="+order.getCheckOut());
+
         int booked=orderMapper.countBooked( order.getRoomId(),
                                             order.getCheckIn(),
                                             order.getCheckOut() );
@@ -59,6 +64,7 @@ public class OrderService {
         }
         orderMapper.updateStatus(orderId,"CANCELLED");
     }
+
     public void cancel(Long orderId){
         Order order=orderMapper.findById(orderId);
         if(order==null){
@@ -68,5 +74,9 @@ public class OrderService {
             throw new RuntimeException("订单状态不允许取消");
         }
         orderMapper.updateStatus(orderId,"CANCELLED");
+    }
+
+    public List<Order> getBookedOrdersByRoomId(Long roomId){
+        return orderMapper.findByRoomIdAndStatus(roomId,"BOOKED");
     }
 }

@@ -21,7 +21,11 @@ public class UserController {
     private JWtUtil jwtUtil;
     /*注册*/
     @PostMapping("/register")
-    public R<Void> register(@RequestBody User user){
+    public R<Void> register(@RequestParam String username,
+                            @RequestParam String password){
+        User user=new User();
+        user.setUsername(username);
+        user.setPassword(password);
         userService.register(user);
         return R.ok("注册成功");
     }

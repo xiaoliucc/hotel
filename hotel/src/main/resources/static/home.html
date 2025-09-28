@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>酒店管理系统</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            /*水平分布*/
+            align-items: center;
+            /*垂直居中*/
+            background-color: #96c2ee;
+            color: #fff;
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-bar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .top-bar a:hover {
+            text-decoration: none;
+        }
+
+        .top2-bar {
+            background-color: #3ecbd8;
+            color: #0f0e0e;
+            padding: 10px 20px;
+            position: sticky;
+            text-align: center;
+            top: 0;
+            z-index: 999;
+        }
+
+        .top2-bar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .room-select {
+            display: flex;
+            align-items: center;
+            margin-left: 54%;
+        }
+
+        .top2-bar .top-foot {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .top2-bar .top-foot p {
+            color: #171616;
+        }
+
+        .top3-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e7db32;
+            color: #ff0000;
+            padding: 10px 20px;
+            text-align: left;
+            font-size: 12px;
+            margin-top: 10px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .search-room {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: aquamarine;
+            margin-top: 10px;
+            ;
+            padding: 15px;
+            border-radius: 5px;
+            /*设置元素边框的圆角半径*/
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            /*设置元素的阴影效果*/
+        }
+
+        .search-room select,
+        .search-room input[type="date"] {
+            margin: 0 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-room button {
+            margin-left: 10px;
+            padding: 8px 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .search-room button:hover {
+            background-color: #40a9ff;
+        }
+
+        .search-room .reSet {
+            background-color: #f5f5f5;
+            color: #909399;
+        }
+
+        .content .room-list {
+            display: flex;
+            flex-wrap: wrap;
+            /*允许换行*/
+            justify-content: flex-start;
+            /*左对齐*/
+            gap: 25px;
+            padding: 20px;
+            background-color: coral;
+            max-width: 80%;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .content .room-list .room-card {
+            display: flex;
+            background-color: #48cfed;
+            border-radius: 20px;
+            /*设置元素边框的圆角半径*/
+            box-shadow: 0 2px 4px rgba(114, 38, 38, 0.1);
+            width: 300px;
+            /*每个卡片的宽度*/
+            height: 400px;
+            margin-bottom: 20px;
+            /*卡片之间的垂直间距*/
+            overflow: hidden;
+            /*隐藏溢出的内容*/
+            display: flex;
+            flex-direction: column;
+            /*垂直排列子元素*/
+            padding: 0;
+        }
+
+        .room-list .room-card .room-item {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 15px 15px;
+
+        }
+
+        .room-list .room-img {
+            height: 40%;
+            /* 图片区域占40%高度 */
+            background-color: #f0f0f0;
+            margin: 0 -15px 15px;
+            /* 负边距让图片延伸到边缘 */
+            border-radius: 20px 20px 0 0;
+            /* 只圆角上方 */
+            background-image: linear-gradient(45deg, #e6e6e6 25%, transparent 25%, transparent 75%, #e6e6e6 75%, #e6e6e6),
+                linear-gradient(45deg, #e6e6e6 25%, transparent 25%, transparent 75%, #e6e6e6 75%, #e6e6e6);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        .room-list .room-info {
+            flex: 1;
+            /* 占据剩余60%空间 */
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            /* 关键：允许内容区域收缩 */
+        }
+
+        .room-list .room-info h3 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .room-list .room-info span {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .room-list .room-info p {
+            margin: 5px 0;
+            color: #34495e;
+            line-height: 1.5;
+        }
+
+        .room-list .room-info p:nth-of-type(1) {
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .room-list .room-info p:nth-of-type(2) {
+            flex: 1;
+            /* 简介区域占据剩余空间 */
+            overflow: hidden;
+            /* 隐藏溢出内容 */
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            line-clamp: 4;
+            /* 限制显示4行 */
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            /* 文本溢出显示省略号 */
+        }
+
+        .room-list .room-info button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            align-self: flex-start;
+        }
+
+        .room-list .room-info button:hover {
+            background-color: #40a9ff;
+        }
+
+        .page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px auto;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            width: 80%;
+            position: relative;
+            /* 相对定位 */
+            left: auto;
+            /* 重置left */
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page .pagination {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .page select,
+        .page input[type="number"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            height: 36px;
+        }
+
+        .page input[type="number"] {
+            width: 80px;
+            text-align: center;
+            height: 20px;
+        }
+
+        .page button {
+            padding: 8px 12px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 85px;
+        }
+
+        .page button:hover {
+            background-color: #40a9ff;
+        }
+
+        .page .active {
+            background-color: #1890ff;
+            color: #fff;
+        }
+
+        .page span {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="head">
+        <div id="top" class="top-bar">
+            <div id="link">
+                <a href="">admin@xiaoliucc.con</a>
+                <a href="">21-2327-2888</a>
+                <a href="">湖北第二师范学院 邮编：430200</a>
+            </div>
+            <div class="admin-action">
+                <a href="admin.html">进入后台</a>
+                <a href="#" onclick="logout()">退出</a>
+            </div>
+        </div>
+        <div id="top-2" class="top2-bar">
+            <div id="room-select" class="room-select">
+                <a href="home.html">首页</a>
+                <a href="javascript:void(0)" onclick="searchByType('标准大床房')">大床房</a>
+                <a href="javascript:void(0)" onclick="searchByType('标准双床房')">双床房</a>
+                <a href="javascript:void(0)" onclick="searchByType('多床房')">多床房</a>
+                <a href="javascript:void(0)" onclick="searchByType('影音房')">影音房</a>
+                <a href="javascript:void(0)" onclick="searchByType('情侣房')">情侣房</a>
+                <a href="javascript:void(0)" onclick="searchByType('家庭房')">家庭房</a>
+                <a href="javascript:void(0)" onclick="searchByType('整栋别墅')">整栋别墅</a>
+            </div>
+            <h1>希望给您留下一段美好的回忆</h1>
+            <div class="top-foot">
+                <a href="home.html" class="mid-home">首页</a>
+                <p>| 客房列表</p>
+            </div>
+        </div>
+        <div id="top-3" class="top3-bar">
+            <p>
+                1,本站为学习项目，仅供学习交流使用，请勿用于商业用途，如有侵权请联系删除！
+                2,本系统由Java+SpringBoot+MySQL+HTML5+css等技术开发完成
+                3，管理员登录账号：xiaoliucc 密码：123456
+            </p>
+        </div>
+    </div>
+    <div class="search-room">
+        <label for="roomType">客房类型</label>
+        <select id="roomType">
+            <option value="" disabled selected>请选择客房分类</option>
+            <option value="标准大床房">标准大床房</option>
+            <option value="标准双床房">标准双床房</option>
+            <option value="多床房">多床房</option>
+            <option value="影音房">影音房</option>
+            <option value="情侣房">情侣房</option>
+            <option value="家庭房">家庭房</option>
+            <option value="整栋别墅">整栋别墅</option>
+        </select>
+        <label for="checkIn">预订日期</label>
+        <input type="date" id="checkIn">
+        <span>--</span>
+        <input type="date" id="checkOut">
+        <div style="text-align: right; margin-top: 10px;">
+            <button onclick="findRoom()">查找</button>
+            <button onclick="reSet()" class="reSet">重置</button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="room-list">
+        </div>
+    </div>
+    <div class="page">
+        <!-- 分页索引 -->
+        <div class="pagination">
+            <span id="totalItems">共0条</span>
+            <select id="itemsPerPage">
+                <option value="6">6条/页</option>
+                <option value="9">9条/页</option>
+            </select>
+            <button onclick="prevPage()">&laquo;</button>
+            <span id="currentPage">1</span>
+            <button onclick="nextPage()">&raquo;</button>
+            <button onclick="goToPage()">前往</button>
+            <input type="number" id="goToPageInput" placeholder="页码">
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = 'http://localhost:8080';
+        let itemsPerPage = 6;//每页显示条数
+        let totalItems = 0;//总条数
+        let currentPage = 1;//当前页
+        let totalPages = 0;// Math.ceil(totalItems / itemsPerPage);//总页数
+        let token = localStorage.getItem('token');
+
+        function getSearchParams() {
+            const roomType = document.getElementById('roomType').value;
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            return {
+                roomType: roomType || null,
+                checkIn: checkIn || null,
+                checkOut: checkOut || null
+            };
+        }
+        function showMessage(msg, isError = true) {
+            console.log(isError ? '错误信息' : '提示信息', msg);
+            if (isError) {
+                alert(msg);
+            }
+        }
+
+        //后台加载数据
+        async function loadAllRooms() {
+            try {
+                const response = await fetch(`${baseUrl}/api/room/list`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+                if (result.code !== 200) {
+                    throw new Error(result.msg || '加载房间失败');
+                } else {
+                    return result.data || [];
+                }
+            } catch (error) {
+                showMessage('加载房间失败: ' + error.message);
+                return [];
+            }
+
+        }
+
+        async function loadPage(page) {
+            try {
+                const allRooms = await loadAllRooms();
+                totalItems = allRooms.length;
+                totalPages = Math.ceil(totalItems / itemsPerPage);
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const rooms = allRooms.slice(start, end);
+                renderRooms(rooms);
+                updatePagination();
+            } catch (error) {
+                showMessage('加载房间失败: ' + error.message);
+            }
+        }
+        function renderRooms(rooms) {
+            const roomList = document.querySelector('.room-list');
+            roomList.innerHTML = '';
+            if (rooms.length === 0) {
+                roomList.innerHTML = '<p>没有找到符合条件的房间。</p>';
+                return;
+            }
+            rooms.forEach(room => {
+                const li = document.createElement('div');
+                li.className = 'room-card';
+                li.innerHTML = `
+                    <div class="room-item">
+                        <div class="room-img">
+
+                        </div>
+                        <div class="room-info">
+                            <h3>${room.type}</h3>
+                            <span>NO.${room.roomNumber}</span>
+                            <p>价格：￥${room.price}/晚</p>
+                            <p>简介：全新升级的豪华套房面积近百平方米，满足您更高品质居住需求。房间包含一室一厅两卫及多个更衣间，移门分隔的客厅和卧室可平衡社交与私密需求。宽敞的客厅拥有舒适的沙发区，独立的餐桌、冰箱、微波炉、Nespresso咖啡机、写字台、储物柜，65寸高清可旋转LCD电视，贴心满足长期居住或小型社交活动需求。卧室配备超大舒适床品、无线及USB充电装置，带暗格收纳的梳妆镜台。您也可尊享行政楼层礼遇，在充满摩登老上海风情的行政酒廊尽享早餐、下午茶、欢乐时光及会议室。</p>
+                            <button onclick="bookRoom(${room.id})">预订</button>
+                        </div>
+                    </div>
+                `;
+                roomList.appendChild(li);
+            });
+        }
+
+        function updateItemsPerPage() {
+            const select = document.getElementById('itemsPerPage');
+            select.value = itemsPerPage;
+        }
+
+        //查找房间
+        // async function findRoom() {
+        //     const params = getSearchParams();
+        //     console.log('查找房间参数:', params);
+        //     if (!params.checkIn || !params.checkOut || !params.roomType) {
+        //         loadPage(currentPage);
+        //         return;
+        //     }
+        //     try {
+        //         const response = await fetch(`${baseUrl}/api/room/search`, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Authorization': `Bearer ${token}`,
+        //                 'Content-Type': 'application/json'
+        //             },
+        //             body: JSON.stringify(params)
+        //         });
+        //         const result = await response.json();
+        //         if (result.code !== 200) {
+        //             throw new Error(result.msg || '查找房间失败');
+        //         } else {
+        //             const rooms = result.data || [];
+        //             totalItems = rooms.length;
+        //             updatePagination();
+        //             renderRooms(rooms);
+        //         }
+        //     } catch (error) {
+        //         showMessage('查找房间失败: ' + error.message);
+        //     }
+        // }
+        //查找房间 - 简化版（推荐）
+        async function findRoom() {
+            const roomType = document.getElementById('roomType').value;
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+
+            try {
+                let rooms;
+
+                // 如果有日期条件，使用搜索API
+                if (checkIn && checkOut) {
+                    const response = await fetch(`${baseUrl}/api/room/search`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            roomType: roomType || null,
+                            checkIn: checkIn,
+                            checkOut: checkOut
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.code !== 200) {
+                        throw new Error(result.msg || '搜索失败');
+                    }
+                    rooms = result.data || [];
+                } else {
+                    // 没有日期条件，获取所有房间
+                    const response = await fetch(`${baseUrl}/api/room/list`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    const result = await response.json();
+                    if (result.code !== 200) {
+                        throw new Error(result.msg || '加载房间失败');
+                    }
+                    rooms = result.data || [];
+
+                    // 前端过滤房间类型
+                    if (roomType) {
+                        rooms = rooms.filter(room => room.type === roomType);
+                    }
+                }
+
+                totalItems = rooms.length;
+                updatePagination();
+                renderRooms(rooms);
+
+            } catch (error) {
+                console.error('操作失败:', error);
+                showMessage('操作失败: ' + error.message);
+                loadPage(currentPage);
+            }
+        }
+        function searchByType(roomType) {
+            document.getElementById('roomType').value = roomType;
+            currentPage = 1;
+            findRoom();
+        }
+        function reSet() {
+            document.getElementById('roomType').value = '';
+            document.getElementById('checkIn').value = '';
+            document.getElementById('checkOut').value = '';
+            currentPage = 1;
+            loadPage(currentPage);
+        }
+
+        function bookRoom(roomId) {
+            if (!token) {
+                alert('请先登录');
+                location.href = 'login.html';
+                return;
+            }
+            window.location.href = `room-detail.html?id=${roomId}`;
+        }
+        function updatePagination() {
+            console.log('更新分页显示:totalItems=' + totalItems + ', currentPage=' + currentPage + ', itemsPerPage=' + itemsPerPage);
+
+            const currentPageElement = document.getElementById('currentPage');
+            if (currentPageElement) {
+                currentPageElement.innerText = currentPage;
+            }
+
+            const totalItemsElement = document.getElementById('totalItems');
+            if (totalItemsElement) {
+                totalItemsElement.innerText = '共' + totalItems + '条';
+            }
+
+            totalPages = Math.ceil(totalItems / itemsPerPage);/*计算总页数*/
+            console.log('总页数：' + totalPages);
+
+            // 禁用上一页按钮
+            document.querySelector('button[onclick="prevPage()"]').disabled = currentPage === 1;
+            // 禁用下一页按钮
+            document.querySelector('button[onclick="nextPage()"]').disabled = currentPage === totalPages;
+        }
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadPage(currentPage);
+            }
+        }
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadPage(currentPage);
+            }
+        }
+        function goToPage() {
+            const pageInput = document.getElementById('goToPageInput');
+            const page = parseInt(pageInput.value);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                loadPage(currentPage);
+            } else {
+                alert('请输入有效的页码');
+            }
+            pageInput.value = '';
+        }
+        function closeModal() {
+            document.getElementById('mask').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            location.href = 'login.html';
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('token');
+            const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+            document.getElementById('checkIn').value = today;
+            document.getElementById('checkOut').value = tomorrow;
+            if (!token) {
+                alert('请先登录');
+                location.href = 'login.html';
+            }
+            updateItemsPerPage();
+            loadPage(currentPage);
+            document.getElementById('roomType').addEventListener('change', function () {
+                currentPage = 1;
+                findRoom();
+            });
+            document.getElementById('checkIn').addEventListener('change', function () {
+                currentPage = 1;
+                findRoom();
+            });
+            document.getElementById('checkOut').addEventListener('change', function () {
+                currentPage = 1;
+                findRoom();
+            });
+            document.getElementById('itemsPerPage').addEventListener('change', function () {
+                itemsPerPage = parseInt(this.value);
+                currentPage = 1;
+                loadPage(currentPage);
+            });
+            loadPage(currentPage);
+        });
+    </script>
+</body>
+
+</html>

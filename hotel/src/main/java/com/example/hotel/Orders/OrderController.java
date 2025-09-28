@@ -42,6 +42,12 @@ public class OrderController {
         return R.ok("取消成功");
     }
 
+    /*获取某个房间被预订的时间*/
+    @GetMapping("/room/{roomId}/booked-times")
+    public R<List<Order>> getRoomBookedTimes(@PathVariable Long roomId){
+        List<Order> bookedOrders=orderService.getBookedOrdersByRoomId(roomId);
+        return R.ok(bookedOrders);
+    }
     /*管理员*/
     /*全部订单*/
     @GetMapping("/all")
@@ -49,6 +55,7 @@ public class OrderController {
     public R<List<Order>> allOrders(HttpServletRequest request){
         return R.ok(orderService.getAllOrders());
     }
+
     /*管理员取消任意订单*/
     @PutMapping("/{id}/forceCancel")
     @AdminOnly
