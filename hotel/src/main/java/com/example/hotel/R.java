@@ -13,16 +13,16 @@ public class R<T> {
     private T data; //具体数据
 
     public static <T> R<T> ok(){
-        return new R<>(200,"sucess",null);
+        return new R<>(200,"success",null);
     }
     public static <T> R<T> ok(T data){
-        return new R<>(200,"sucess",data);
+        return new R<>(200,"success",data);
     }
     public static <T> R<T> ok(String msg){
         return new R<>(200,msg,null);
     }
-    public static <T> R<T> ok(String msg,T d){
-        return new R<>(200,msg,d);
+    public static <T> R<T> ok(String msg,T data){
+        return new R<>(200,msg,data);
     }
     public static <T> R<T> fail(String msg){
         return new R<>(500,msg,null);
