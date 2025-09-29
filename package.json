@@ -1,0 +1,7 @@
+{
+  "name": "hotel-management",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "mkdir -p public && cp -r hotel/src/main/resources/static/* public/ && echo '✅ 文件复制完成' && ls -la public/"
+  }
+}

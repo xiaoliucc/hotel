@@ -2,12 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/server.js",
-      "use": "@vercel/node"
+      "src": "package.json",
+      "use": "@vercel/static-build"
     },
     {
-      "src": "hotel/src/main/resources/static/**/*",
-      "use": "@vercel/static"
+      "src": "api/server.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -16,16 +16,8 @@
       "dest": "/api/server.js"
     },
     {
-      "src": "/",
-      "dest": "/hotel/src/main/resources/static/index.html"
-    },
-    {
-      "src": "/(.*\\.html)",
-      "dest": "/hotel/src/main/resources/static/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/hotel/src/main/resources/static/$1"
+      "dest": "/public/$1"
     }
   ]
 }
