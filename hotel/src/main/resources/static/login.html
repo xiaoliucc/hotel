@@ -84,7 +84,10 @@
 
     </div>
     <script>
-        const baseUrl = 'http://localhost:8080';
+        // const baseUrl = 'http://localhost:8080';
+        const baseUrl = window.location.hostname.includes('localhost')
+            ? 'http://localhost:8080'
+            : '';  // 生产环境使用相对路径，自动匹配当前域名
         const msgBox = document.getElementById('msg');
         function showMsg(txt, isError = true) {
             msgBox.textContent = txt;

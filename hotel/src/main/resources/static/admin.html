@@ -426,7 +426,10 @@
         <p>© 2025 酒店管理系统</p>
     </footer>
     <script>
-        const baseUrl = 'http://localhost:8080';
+        // const baseUrl = 'http://localhost:8080';
+        const baseUrl = window.location.hostname.includes('localhost')
+            ? 'http://localhost:8080'
+            : '';  // 生产环境使用相对路径，自动匹配当前域名
         let token = localStorage.getItem('token');
 
         function checkLogin() {

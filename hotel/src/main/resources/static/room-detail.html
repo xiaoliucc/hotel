@@ -228,7 +228,10 @@
             </div>
         </div>
         <script>
-            const baseUrl = 'http://localhost:8080';
+            // const baseUrl = 'http://localhost:8080';
+            const baseUrl = window.location.hostname.includes('localhost')
+                ? 'http://localhost:8080'
+                : '';  // 生产环境使用相对路径，自动匹配当前域名
             let bookedTimeRanges = []; // 存储已预订的时间段
             function logout() {
                 // 清除登录状态（例如，清除本地存储的token）
