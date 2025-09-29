@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "/hotel/src/main/resources/static/**/*",
+      "src": "src/main/resources/static/**/*",
       "use": "@vercel/static"
     }
   ],
@@ -17,15 +17,15 @@
     },
     {
       "src": "/",
-      "dest": "/hotel/src/main/resources/static/index.html"
+      "dest": "/src/main/resources/static/index.html"
     },
     {
       "src": "/(.*\\.html)",
-      "dest": "/hotel/src/main/resources/static/$1"
+      "dest": "/src/main/resources/static/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/hotel/src/main/resources/static/$1"
+      "dest": "/src/main/resources/static/$1"
     }
   ]
 }
