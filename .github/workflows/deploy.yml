@@ -15,40 +15,39 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+        
+      - name: Copy static files
+        run: |
+          mkdir -p ./_site
+          cp -r ./src/main/resources/static/* ./_site/
+          echo "✅ 文件复制完成"
+          echo "部署文件列表:"
+          ls -la ./_site/
+          
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
+    
     runs-on: ubuntu-latest
-
+    name: Deploy
+    needs: build
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-
-      - name: Copy static files to deployment directory
-        run: |
-          # 创建发布目录
-          mkdir -p ./_site
-          
-          # 复制static目录下的所有文件
-          echo "正在复制静态文件..."
-          cp -r ./src/main/resources/static/* ./_site/
-          
-          # 验证文件复制成功
-          echo "部署文件列表:"
-          ls -la ./_site/
-          echo "HTML文件:"
-          ls -la ./_site/*.html
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: './_site'
-
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
