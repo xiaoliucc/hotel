@@ -1,33 +1,50 @@
 package com.example.hotel;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data //自动生成 getter、setter、toString、equals 等方法
-@NoArgsConstructor // 生成无参构造方法
-@AllArgsConstructor // 生成全参构造方法
 public class R<T> {
-    private Integer code; // 200成功，其他失败
-    private String msg; //提示信息
-    private T data; //具体数据
+    private Integer code;
+    private String msg;
+    private T data;
 
-    public static <T> R<T> ok(){
-        return new R<>(200,"success",null);
+    public R() {}
+
+    public R(Integer code, String msg, T data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
     }
-    public static <T> R<T> ok(T data){
-        return new R<>(200,"success",data);
+
+    // Getter and Setter 方法
+    public Integer getCode() { return code; }
+    public void setCode(Integer code) { this.code = code; }
+
+    public String getMsg() { return msg; }
+    public void setMsg(String msg) { this.msg = msg; }
+
+    public T getData() { return data; }
+    public void setData(T data) { this.data = data; }
+
+    // 静态方法
+    public static <T> R<T> ok() {
+        return new R<T>(200, "success", null);
     }
-    public static <T> R<T> ok(String msg){
-        return new R<>(200,msg,null);
+
+    public static <T> R<T> ok(T data) {
+        return new R<T>(200, "success", data);
     }
-    public static <T> R<T> ok(String msg,T data){
-        return new R<>(200,msg,data);
+
+    public static <T> R<T> ok(String msg) {
+        return new R<T>(200, msg, null);
     }
-    public static <T> R<T> fail(String msg){
-        return new R<>(500,msg,null);
+
+    public static <T> R<T> ok(String msg, T data) {
+        return new R<T>(200, msg, data);
     }
-    public static <T> R<T> fail(int code,String msg){
-        return new R<>(code,msg,null);
+
+    public static <T> R<T> fail(String msg) {
+        return new R<T>(500, msg, null);
+    }
+
+    public static <T> R<T> fail(int code, String msg) {
+        return new R<T>(code, msg, null);
     }
 }
