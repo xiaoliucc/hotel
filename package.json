@@ -1,7 +1,0 @@
-{
-  "name": "hotel-management",
-  "version": "1.0.0",
-  "scripts": {
-    "build": "chmod +x deploy.sh && ./deploy.sh"
-  }
-}
