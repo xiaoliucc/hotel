@@ -22,16 +22,35 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Debug - List project structure
+        run: |
+          echo "📁 项目根目录结构:"
+          ls -la
+          echo ""
+          echo "📁 hotel目录结构:"
+          ls -la hotel/ || echo "hotel目录不存在"
+          echo ""
+          echo "📁 static目录结构:"
+          ls -la hotel/src/main/resources/static/ || echo "static目录不存在"
+        
       - name: Setup Pages
         uses: actions/configure-pages@v3
         
       - name: Copy static files
         run: |
-          mkdir -p ./_site
-          cp -r ./src/main/resources/static/* ./_site/
-          echo "✅ 文件复制完成"
-          echo "部署文件列表:"
-          ls -la ./_site/
+          echo "🔍 检查static目录..."
+          if [ -d "hotel/src/main/resources/static" ]; then
+            echo "✅ 找到static目录在 hotel/src/main/resources/static/"
+            mkdir -p ./_site
+            cp -r hotel/src/main/resources/static/* ./_site/
+            echo "✅ 文件复制完成"
+            echo "📄 部署文件列表:"
+            ls -la ./_site/
+          else
+            echo "❌ static目录不存在，尝试查找HTML文件..."
+            find . -name "*.html" -type f | head -10
+            exit 1
+          fi
           
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
