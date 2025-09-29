@@ -1,0 +1,54 @@
+name: Deploy Hotel Management System to GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Copy static files to deployment directory
+        run: |
+          # 创建发布目录
+          mkdir -p ./_site
+          
+          # 复制static目录下的所有文件
+          echo "正在复制静态文件..."
+          cp -r ./src/main/resources/static/* ./_site/
+          
+          # 验证文件复制成功
+          echo "部署文件列表:"
+          ls -la ./_site/
+          echo "HTML文件:"
+          ls -la ./_site/*.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
