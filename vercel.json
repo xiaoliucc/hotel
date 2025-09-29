@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "public/**/*",
+      "src": "/hotel/src/main/resources/static/**/*",
       "use": "@vercel/static"
     }
   ],
@@ -16,8 +16,16 @@
       "dest": "/api/server.js"
     },
     {
+      "src": "/",
+      "dest": "/hotel/src/main/resources/static/index.html"
+    },
+    {
+      "src": "/(.*\\.html)",
+      "dest": "/hotel/src/main/resources/static/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/hotel/src/main/resources/static/$1"
     }
   ]
 }
