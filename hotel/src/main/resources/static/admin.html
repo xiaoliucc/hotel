@@ -694,6 +694,7 @@
                 if (result.code === 200 && result.data.length > 0) {
                     result.data.forEach(image => {
                         let imageUrl = image.imageUrl;
+                        console.log('原始imagerul:', imageUrl);
                         if (imageUrl.startsWith('http')) {
                             // 如果包含localhost，替换为服务器IP
                             if (imageUrl.includes('localhost:8080')) {
@@ -702,16 +703,17 @@
                         } else {
                             imageUrl = `${baseUrl}${image.imageUrl}`;
                         }
+                        console.log('处理后imageUrl:', imageUrl); // 可验证处理结果
                         const imageItem = `
-                <div class="image-item" style="border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
-                    <img src="${baseUrl}${image.imageUrl}" style="width: 100%; height: 120px; object-fit: cover;">
-                    <div style="text-align: center; margin-top: 5px;">
-                        ${image.isPrimary ? '<span style="color: green; font-size: 12px;">主图</span>' :
+                            <div class="image-item" style="border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                                <img src="${imageUrl}" style="width: 100%; height: 120px; object-fit: cover;">
+                                <div style="text-align: center; margin-top: 5px;">
+                                    ${image.isPrimary ? '<span style="color: green; font-size: 12px;">主图</span>' :
                                 `<button onclick="setPrimaryImage(${image.id})" style="font-size: 12px; padding: 2px 6px;">设为主图</button>`}
-                        <button onclick="deleteImage(${image.id})" style="font-size: 12px; padding: 2px 6px; background: #ff4d4f; margin-left: 5px;">删除</button>
-                    </div>
-                </div>
-                `;
+                                    <button onclick="deleteImage(${image.id})" style="font-size: 12px; padding: 2px 6px; background: #ff4d4f; margin-left: 5px;">删除</button>
+                                </div>
+                            </div>
+                            `;
                         imageList.innerHTML += imageItem;
                     });
                 } else {

@@ -277,19 +277,18 @@
                                 console.log('primaryImage', primaryImage)
                                 let imageUrl = primaryImage.imageUrl;
 
-                                // 判断是否已经是完整URL
-                                if (!imageUrl.startsWith('http')) {
-                                    if (imageUrl.includes('localhost:8080')) {
-                                        imageUrl = imageUrl.replace('http://localhost:8080', baseUrl);
-                                        console.log('修复后的图片URL:', imageUrl);
-                                    }
-                                } else {
-                                    imageUrl = `${baseUrl}${imageUrl}`;
+                                // 统一处理所有图片URL
+                                if (imageUrl.includes('http://localhost:8080')) {
+                                    imageUrl = imageUrl.replace('http://localhost:8080', baseUrl);
+                                    console.log('修复后的图片URL:', imageUrl);
+                                } else if (!imageUrl.startsWith('http')) {
+                                    // 如果是相对路径，拼接基础URL
+                                    imageUrl = baseUrl + (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
                                 }
                                 document.getElementById('roomImage').src = imageUrl;
                                 document.getElementById('roomImage').alt = room.type;
                             } else {
-                                // 如果没有图片，显示默认图片或占位符
+                                // 如果没有图片，显示默认图片
                                 document.getElementById('roomImage').src = `${baseUrl}/images/default-room.jpg`;
                                 document.getElementById('roomImage').alt = '默认房间图片';
                             }

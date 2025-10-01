@@ -537,11 +537,13 @@
                     let imageUrl = primaryImage.imageUrl;
                     console.log('原始图片URL：', imageUrl);
                     // 统一处理所有图片URL
-                    if (imageUrl.includes('localhost')) {
+                    if (imageUrl.includes('http://localhost:8080')) {
                         imageUrl = imageUrl.replace('http://localhost:8080', baseUrl);
                     } else if (!imageUrl.startsWith('http')) {
                         imageUrl = baseUrl + (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
                     }
+                    console.log('处理后imageUrl:', imageUrl);
+                    return imageUrl;
                 }
             } catch (error) {
                 console.error('加载房间图片失败', error);
