@@ -1,0 +1,60 @@
+ body {
+     margin: 0;
+     height: 100vh;
+     background: linear-gradient(135deg, #667eea 0%, #764ba2);
+     font-family: "Microsoft YaHei", sans-serif;
+     display: flex;
+     justify-content: center;
+     /*水平居中*/
+     align-items: center;
+     /*垂直居中*/
+ }
+
+ .box {
+     width: 400px;
+     padding: 30px 40px;
+     background: #fff;
+     box-shadow: 0 10 25px rgba(0, 0, 0, 0.2);
+ }
+
+ h2 {
+     text-align: center;
+     margin-bottom: 20px;
+ }
+
+ input[type="text"],
+ input[type="password"] {
+     width: 100%;
+     padding: 10px;
+     margin: 10px 0;
+     border: 1px solid #ccc;
+     border-radius: 5px;
+ }
+
+ button {
+     width: 100%;
+     padding: 10px;
+     background: #667eea;
+     border: none;
+     color: #fff;
+     border-radius: 5px;
+     cursor: pointer;
+     font-size: 16px;
+     transition: background .25s;
+ }
+
+ button:hover {
+     background: #764ba2;
+ }
+
+ .error {
+     color: red;
+     text-align: center;
+     margin-top: 10px;
+ }
+
+ .success {
+     color: green;
+     text-align: center;
+     margin-top: 10px;
+ }
