@@ -519,6 +519,7 @@
 
         async function loadRoomImages(roomId) {
             console.log('roomId:', roomId);
+            console.log('baseurl:', baseUrl);
             try {
                 const token = localStorage.getItem('token');
                 console.log('token:', token);
@@ -534,12 +535,12 @@
                 if (result.code === 200 && result.data.length > 0) {
                     const primaryImage = result.data.find(img => img.isPrimary) || result.data[0];
                     let imageUrl = primaryImage.imageUrl;
-
-                    // 判断是否已经是完整URL
-                    if (imageUrl.startsWith('http')) {
-                        return imageUrl;
-                    } else {
-                        return `${baseUrl}${imageUrl}`;
+                    console.log('原始图片URL：', imageUrl);
+                    // 统一处理所有图片URL
+                    if (imageUrl.includes('localhost')) {
+                        imageUrl = imageUrl.replace('http://localhost:8080', baseUrl);
+                    } else if (!imageUrl.startsWith('http')) {
+                        imageUrl = baseUrl + (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
                     }
                 }
             } catch (error) {

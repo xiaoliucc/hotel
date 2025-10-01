@@ -694,11 +694,12 @@
                 if (result.code === 200 && result.data.length > 0) {
                     result.data.forEach(image => {
                         let imageUrl = image.imageUrl;
-                        if (image.imageUrl.startsWith('http')) {
-                            // 已经是完整URL，直接使用
-                            imageUrl = image.imageUrl;
+                        if (imageUrl.startsWith('http')) {
+                            // 如果包含localhost，替换为服务器IP
+                            if (imageUrl.includes('localhost:8080')) {
+                                imageUrl = imageUrl.replace('http://localhost:8080', baseUrl);
+                            }
                         } else {
-                            // 相对路径，拼接baseUrl
                             imageUrl = `${baseUrl}${image.imageUrl}`;
                         }
                         const imageItem = `

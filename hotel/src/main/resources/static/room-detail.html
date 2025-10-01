@@ -279,6 +279,11 @@
 
                                 // 判断是否已经是完整URL
                                 if (!imageUrl.startsWith('http')) {
+                                    if (imageUrl.includes('localhost:8080')) {
+                                        imageUrl = imageUrl.replace('http://localhost:8080', baseUrl);
+                                        console.log('修复后的图片URL:', imageUrl);
+                                    }
+                                } else {
                                     imageUrl = `${baseUrl}${imageUrl}`;
                                 }
                                 document.getElementById('roomImage').src = imageUrl;
