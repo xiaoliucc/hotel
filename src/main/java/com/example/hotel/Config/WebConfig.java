@@ -31,14 +31,13 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("classpath:/static/images/");
+                .addResourceLocations(
+                        "classpath:/static/images/",
+                        "file:./src/main/resources/static/images/");
 
         registry.addResourceHandler("/**")
                 .addResourceLocations(
-                        "classpath:/META-INF/resources/",
-                        "classpath:/resources/",
                         "classpath:/static/",
-                        "classpath:/public/",
-                        "file:./uploads/");
+                        "classpath:/public/");
     }
 }
