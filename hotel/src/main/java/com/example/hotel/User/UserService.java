@@ -38,4 +38,9 @@ public class UserService {
     public List<User> getAllUsers(){
         return userMapper.getAllUser();
     }
+
+    public String getUserRole(String username){
+        return userMapper.findByUsername(username).getRole();
+    }
+
 }

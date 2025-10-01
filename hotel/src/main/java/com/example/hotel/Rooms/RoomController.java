@@ -1,7 +1,7 @@
 package com.example.hotel.Rooms;
 
-import com.example.hotel.AdminOnly;
-import com.example.hotel.R;
+import com.example.hotel.utils.AdminOnly;
+import com.example.hotel.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,19 +55,19 @@ public class RoomController {
 
     @GetMapping("/search")
     public R<List<Room>> searchRooms(@RequestParam LocalDate checkIn,
-                                     @RequestParam LocalDate checkOut,
-                                     @RequestParam(required = false) String roomType){
-        List<Room> availableRooms=roomService.findAvailableRoom(checkIn,checkOut,roomType);
+            @RequestParam LocalDate checkOut,
+            @RequestParam(required = false) String roomType) {
+        List<Room> availableRooms = roomService.findAvailableRoom(checkIn, checkOut, roomType);
         return R.ok(availableRooms);
     }
-    @PostMapping("/search")
-    public R<List<Room>> searchRooms(@RequestBody Map<String,String>params){
-        String roomType=params.get("roomType");
-        String checkIn=params.get("checkIn");
-        String checkOut=params.get("checkOut");
-        List<Room> availableRooms=roomService.findAvailableRoom(LocalDate.parse(checkIn),LocalDate.parse(checkOut),roomType);
-        return R.ok(availableRooms);
-    }
-
+    // @PostMapping("/search")
+    // public R<List<Room>> searchRooms(@RequestBody Map<String,String>params){
+    // String roomType=params.get("roomType");
+    // String checkIn=params.get("checkIn");
+    // String checkOut=params.get("checkOut");
+    // List<Room>
+    // availableRooms=roomService.findAvailableRoom(LocalDate.parse(checkIn),LocalDate.parse(checkOut),roomType);
+    // return R.ok(availableRooms);
+    // }
 
 }

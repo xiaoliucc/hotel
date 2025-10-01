@@ -1,4 +1,4 @@
-package com.example.hotel;
+package com.example.hotel.utils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

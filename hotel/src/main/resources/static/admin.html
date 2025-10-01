@@ -251,7 +251,7 @@
             margin-top: 20px;
         }
 
-        .btn-primary {
+        .btn-isPrimary {
             background-color: #1890ff;
             color: white;
             padding: 10px 20px;
@@ -334,7 +334,7 @@
             <div id="room-management" class="content-section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>房间管理</h2>
-                    <button class="btn-primary" onclick="addRoom()">新增房间</button>
+                    <button class="btn-isPrimary" onclick="addRoom()">新增房间</button>
                 </div>
                 <table id="roomTable">
                     <thead>
@@ -388,7 +388,7 @@
                             </select>
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="btn-primary" onclick="saveRoom()">保存</button>
+                            <button type="button" class="btn-isPrimary" onclick="saveRoom()">保存</button>
                             <button type="button" class="btn-cancel" onclick="closeRoomModal()">取消</button>
                         </div>
                     </form>
@@ -440,7 +440,29 @@
             }
             return true;
         }
+        async function checkAdmin() {
+            if (!checkLogin()) return;
+            try {
+                // 解析JWT token获取角色信息
+                console.log('token:', token);
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const userRole = payload.role;
 
+                console.log("role:", userRole);
+
+                // 检查是否是管理员
+                if (userRole !== 'ADMIN') {
+                    alert('权限不足，需要管理员权限');
+                    window.location.href = 'home.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('检查管理员权限失败:', error);
+                return false;
+            }
+
+        }
         function showSection(sectionName) {
             //隐藏所有内容区域
             document.querySelectorAll('.content-section').forEach(section => {
@@ -537,6 +559,8 @@
                     <td>
                     <button class="btn-edit" onclick="editRoom(${room.id})">编辑</button>
                     <button class="btn-delete" onclick="deleteRoom(${room.id})">删除</button>
+                    <button style="background: #52c41a; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;" 
+                        onclick="openImageManager(${room.id})">图片管理</button>
                     </td>
                 `
                 tbody.appendChild(tr);
@@ -621,7 +645,165 @@
                 tbody.appendChild(tr);
             })
         }
+        //图片管理
+        async function openImageManager(roomId) {
+            const modal = document.getElementById('imageManagerModal');
+            if (!modal) {
+                createImageManagerModal();
+            }
+            document.getElementById('imageManagerModal').style.display = 'flex';
+            document.getElementById('currentRoomId').value = roomId;
+            await loadRoomImages(roomId);
 
+        }
+        function createImageManagerModal() {
+            const modalHTML = `
+                <div id="imageManagerModal" class="modal-mask">
+                    <div class="modal-content" style="max-width: 800px;">
+                        <div class="modal-header">
+                            <h3>房间图片管理</h3>
+                            <button class="modal-close" onclick="closeImageManager()">&times;</button>
+                        </div>
+                        <div class="form-group">
+                            <label>上传图片</label>
+                            <input type="file" id="imageFile" accept="image/*">
+                            <label style="display: inline-block; margin-left: 10px;">
+                                <input type="checkbox" id="setAsPrimary"> 设为主图
+                            </label>
+                            <button onclick="uploadImage()" style="margin-top: 10px;">上传</button>
+                        </div>
+                        <div id="imageList" style="margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                            <!-- 图片列表将在这里显示 -->
+                        </div>
+                        <input type="hidden" id="currentRoomId">
+                    </div>
+                </div>
+                `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        async function loadRoomImages(roomId) {
+            try {
+                const response = await fetch(`${baseUrl}/api/room-images/room/${roomId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json()
+
+                const imageList = document.getElementById('imageList');
+                imageList.innerHTML = '';
+
+                if (result.code === 200 && result.data.length > 0) {
+                    result.data.forEach(image => {
+                        let imageUrl = image.imageUrl;
+                        if (image.imageUrl.startsWith('http')) {
+                            // 已经是完整URL，直接使用
+                            imageUrl = image.imageUrl;
+                        } else {
+                            // 相对路径，拼接baseUrl
+                            imageUrl = `${baseUrl}${image.imageUrl}`;
+                        }
+                        const imageItem = `
+                <div class="image-item" style="border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                    <img src="${baseUrl}${image.imageUrl}" style="width: 100%; height: 120px; object-fit: cover;">
+                    <div style="text-align: center; margin-top: 5px;">
+                        ${image.isPrimary ? '<span style="color: green; font-size: 12px;">主图</span>' :
+                                `<button onclick="setPrimaryImage(${image.id})" style="font-size: 12px; padding: 2px 6px;">设为主图</button>`}
+                        <button onclick="deleteImage(${image.id})" style="font-size: 12px; padding: 2px 6px; background: #ff4d4f; margin-left: 5px;">删除</button>
+                    </div>
+                </div>
+                `;
+                        imageList.innerHTML += imageItem;
+                    });
+                } else {
+                    imageList.innerHTML = '<p>暂无图片</p>';;
+                }
+            } catch (error) {
+                console.error('加载图片失败：', error)
+            }
+        }
+
+        async function uploadImage() {
+            const roomId = document.getElementById('currentRoomId').value;
+            const fileInput = document.getElementById('imageFile');
+            const isPrimary = document.getElementById('setAsPrimary').checked;
+
+            if (!fileInput.files[0]) {
+                alert('请选择图片');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('roomId', roomId);
+            formData.append('image', fileInput.files[0]);
+            formData.append('isPrimary', isPrimary);
+
+            try {
+                const response = await fetch(`${baseUrl}/api/room-images/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+
+                });
+                const result = await response.json();
+                if (result.code === 200) {
+                    alert('图片上传成功');
+                    fileInput.value = '';
+                    document.getElementById('setAsPrimary').checked = false;
+                    await loadRoomImages(roomId);
+                } else {
+                    throw new Error(result.msg);
+                }
+            } catch (error) {
+                console.error('上传失败', error);
+                alert('上传失败' + error.message);
+            }
+        }
+        async function setPrimaryImage(imageId) {
+            try {
+                const response = await fetch(`${baseUrl}/api/room-images/${imageId}/set-primary`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                if (result.code === 200) {
+                    alert('设置主图成功');
+                    const roomId = document.getElementById('currentRoomId').value;
+                    await loadRoomImages(roomId);
+                } else {
+                    throw new Error(result.msg);
+                }
+            } catch (error) {
+                console.error('设置主图失败', error);
+                alert('设置主图失败' + error.message);
+            }
+
+        }
+        async function deleteImage(imageId) {
+            if (!confirm('确定要删除这张图片吗？')) return;
+
+            try {
+                const response = await fetch(`${baseUrl}/api/room-images/${imageId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                if (result.code === 200) {
+                    alert('删除成功');
+                    const roomId = document.getElementById('currentRoomId').value;
+                    await loadRoomImages(roomId);
+                } else {
+                    throw new Error(result.msg);
+                }
+            } catch (error) {
+                console.error('删除失败', error);
+                alert('删除失败' + error.message);
+            }
+
+        }
+
+        function closeImageManager() {
+            document.getElementById('imageManagerModal').style.display = 'none';
+        }
         //操作函数
         function editRoom(roomId) {
             if (!checkLogin()) return;
@@ -770,7 +952,7 @@
         //页面加载时初始化
         document.addEventListener('DOMContentLoaded', function () {
             if (!checkLogin()) return;
-
+            checkAdmin();
             console.log('token:', token);
             showSection('dashboard');
 

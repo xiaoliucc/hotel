@@ -5,6 +5,7 @@ import com.example.hotel.Interceptor.JwtInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -25,5 +26,19 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/**")
                 /*指定排除的 URL*/
                 .excludePathPatterns("/api/user/login","/api/user/register");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("classpath:/static/images/");
+
+        registry.addResourceHandler("/**")
+                .addResourceLocations(
+                        "classpath:/META-INF/resources/",
+                        "classpath:/resources/",
+                        "classpath:/static/",
+                        "classpath:/public/",
+                        "file:./uploads/");
     }
 }

@@ -1,8 +1,8 @@
 package com.example.hotel.Interceptor;
 
 import com.alibaba.fastjson.JSON;
-import com.example.hotel.JWtUtil;
-import com.example.hotel.R;
+import com.example.hotel.utils.JWtUtil;
+import com.example.hotel.utils.R;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

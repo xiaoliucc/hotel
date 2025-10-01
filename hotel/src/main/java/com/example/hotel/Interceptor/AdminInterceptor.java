@@ -1,7 +1,7 @@
 package com.example.hotel.Interceptor;
 
-import com.example.hotel.AdminOnly;
-import com.example.hotel.R;
+import com.example.hotel.utils.AdminOnly;
+import com.example.hotel.utils.R;
 import com.example.hotel.User.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

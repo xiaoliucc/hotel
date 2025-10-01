@@ -1,4 +1,4 @@
-package com.example.hotel;
+package com.example.hotel.utils;
 
 public class R<T> {
     private Integer code;

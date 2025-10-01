@@ -1,10 +1,8 @@
 package com.example.hotel.User;
 
-import com.example.hotel.AdminOnly;
-import com.example.hotel.JWtUtil;
-import com.example.hotel.Orders.Order;
-import com.example.hotel.R;
-import jakarta.servlet.http.HttpSession;
+import com.example.hotel.utils.AdminOnly;
+import com.example.hotel.utils.JWtUtil;
+import com.example.hotel.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +42,11 @@ public class UserController {
     public R<List<User>> getAll(){
         List<User> list=userService.getAllUsers();
         return R.ok(list);
+    }
+
+    @GetMapping("/findUserRole")
+    public R<String> findUserRole(@RequestParam String userName){
+        String  role=userService.getUserRole(userName);
+        return R.ok(role);
     }
 }

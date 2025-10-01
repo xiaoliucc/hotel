@@ -1,4 +1,4 @@
-package com.example.hotel;
+package com.example.hotel.utils;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

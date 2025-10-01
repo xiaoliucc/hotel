@@ -1,11 +1,9 @@
 package com.example.hotel.Orders;
 
-import com.example.hotel.AdminOnly;
-import com.example.hotel.R;
-import com.example.hotel.Rooms.Room;
+import com.example.hotel.utils.AdminOnly;
+import com.example.hotel.utils.R;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

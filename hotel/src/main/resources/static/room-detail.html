@@ -218,7 +218,7 @@
                         <label for="checkIn">预订日期</label>
                         <input type="date" id="checkIn">
                         <span>--</span>
-                        <input type="date" id="checkOut">
+                        <input type="date" id="checkOut" title="请选择退房日期" placeholder="请选择退房日期">
                     </div>
                     <button class="book-button" onclick="bookRoom()">预订</button>
                 </div>
@@ -247,6 +247,61 @@
                     window.location.href = 'home.html';
                     return;
                 }
+
+                Promise.all([
+                    fetch(`${baseUrl}/api/room/detail/${roomId}`, {
+                        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                    }),
+                    fetch(`${baseUrl}/api/room-images/room/${roomId}`, {
+                        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                    }),
+                    fetch(`${baseUrl}/api/order/room/${roomId}/booked-times`, {
+                        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                    })
+                ])
+                    .then(response => Promise.all(response.map(response => response.json())))
+                    .then(([roomResult, imageResult, orderResult]) => {
+                        console.log('房间数据', roomResult);
+                        console.log('图片数据', imageResult);
+
+                        if (roomResult.code === 200) {
+                            const room = roomResult.data;
+                            // 加载基础数据
+                            document.getElementById('roomType').textContent = room.type || '未知类型';
+                            document.getElementById('roomNumber').textContent = `房间号: ${room.roomNumber || '未知'}`;
+                            document.getElementById('roomPrice').textContent = `价格: ￥${room.price || '未知'}/晚`;
+                            document.getElementById('roomDescription').innerHTML = '全新升级的豪华套房面积近百平方米，满足您更高品质居住需求...';
+
+                            if (imageResult.code === 200 && imageResult.data.length > 0) {
+                                const primaryImage = imageResult.data.find(img => img.isPrimary) || imageResult.data[0];
+                                console.log('primaryImage', primaryImage)
+                                let imageUrl = primaryImage.imageUrl;
+
+                                // 判断是否已经是完整URL
+                                if (!imageUrl.startsWith('http')) {
+                                    imageUrl = `${baseUrl}${imageUrl}`;
+                                }
+                                document.getElementById('roomImage').src = imageUrl;
+                                document.getElementById('roomImage').alt = room.type;
+                            } else {
+                                // 如果没有图片，显示默认图片或占位符
+                                document.getElementById('roomImage').src = `${baseUrl}/images/default-room.jpg`;
+                                document.getElementById('roomImage').alt = '默认房间图片';
+                            }
+                        } else {
+                            throw new Error(roomResult.msg || '获取房间详情失败');
+                        }
+                        if (orderResult.code === 200) {
+                            const bookedOrders = orderResult.data;
+                            bookedTimeRanges = bookedOrders || [];
+                            displayBookedTimes(bookedOrders);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching room details:', error);
+                        alert('获取房间详情失败: ' + error.message);
+                    });
+
                 fetch(`${baseUrl}/api/room/detail/${roomId}`, {
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('token')

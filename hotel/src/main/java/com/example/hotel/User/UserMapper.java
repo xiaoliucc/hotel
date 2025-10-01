@@ -25,5 +25,4 @@ public interface UserMapper {
     /*全部用户输出*/
     @Select("select * from users")
     List<User> getAllUser();
-
 }

@@ -1,9 +1,8 @@
 package com.example.hotel.Rooms;
 
+import com.example.hotel.Images.RoomImageService;
 import com.example.hotel.Orders.Order;
 import com.example.hotel.Orders.OrderMapper;
-import com.example.hotel.Page.Page;
-import com.example.hotel.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,8 @@ public class RoomService {
     private RoomMapper roomMapper;
     @Autowired
     private OrderMapper orderMapper;
-
-
+    @Autowired
+    private RoomImageService roomImageService;
     public void addRoom(Room room){
         if(room.getStatus()==null || room.getStatus().isBlank()){
             room.setStatus("AVAILABLE");
@@ -67,5 +66,9 @@ public class RoomService {
 
     }
 
+    public Room getRoomWithImages(Long roomId){
+        Room room=roomMapper.findById(roomId);
+        return room;
+    }
 
 }
